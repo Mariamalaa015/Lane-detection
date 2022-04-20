@@ -303,10 +303,10 @@ if __name__ == '__main__':
         image = cv2.imread(input_path)
         cv2.imwrite(output_path, pipeline(image))
     elif input_type.lower() == 'video':
-        clip = VideoFileClip(input_path)
-        output_clip = clip.fl_image(pipeline)
-        output_clip.write_videofile(output_path, audio=False)
+        video = VideoFileClip(input_path)
+        output_video = video.fl_image(pipeline)
+        output_video.write_videofile(output_path, audio=False)
     else:
-        print('Input type must be either an image or a vide.')
+        print('Input type must be either "image" or "video".')
         sys.exit(1)
         
