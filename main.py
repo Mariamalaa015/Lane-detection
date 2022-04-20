@@ -306,7 +306,7 @@ if __name__ == '__main__':
     
     try:
         debug_mode = sys.argv[4]
-        debug = debug_mode.lower() == 'debug'
+        debug = debug_mode == '1'
     except IndexError:
         debug = False
 
