@@ -249,7 +249,7 @@ def combine_output(result, combined_binary, warped_image, image_with_windows, in
 
     return final
 
-def pipeline (image):
+def pipeline (image, debug=False):
 
     #Image shape and region of interest
     height = image.shape[0]
@@ -284,6 +284,9 @@ def pipeline (image):
     veh_pos = measure_position(warped_image, left_fit, right_fit)
     out_img = put_text(result , left_curverad , right_curverad , veh_pos)
     
+    if not debug:
+        return out_img
+
     #Combining images to display
     result_final = combine_output(out_img, combined_binary, warped_image, image_with_windows, inv_warp, cropped_image)
     
@@ -294,19 +297,30 @@ if __name__ == '__main__':
     import sys
 
     try:
-        input_type, input_path, output_path, debug_mode = sys.argv[1:]
-    except:
+        input_type = sys.argv[1]
+        input_path = sys.argv[2]
+        output_path = sys.argv[3]
+    except IndexError:
         print("Incorrect number of arguments.")
         sys.exit(1)
     
+    try:
+        debug_mode = sys.argv[4]
+        debug = debug_mode.lower() == 'debug'
+    except IndexError:
+        debug = False
+
+    if debug:
+        print('DEBUG mode enabled.')
+
     if input_type.lower() == 'image':
         image = cv2.imread(input_path)
-        cv2.imwrite(output_path, pipeline(image))
+        cv2.imwrite(output_path, pipeline(image, debug))
     elif input_type.lower() == 'video':
         video = VideoFileClip(input_path)
-        output_video = video.fl_image(pipeline)
+        output_video = video.fl_image(lambda image: pipeline(image, debug))
         output_video.write_videofile(output_path, audio=False)
     else:
-        print('Input type must be either "image" or "video".')
+        print('Input type (first argument) must be either "image" or "video".')
         sys.exit(1)
         
